@@ -1,0 +1,180 @@
+APPOINTMENT MANAGEMENT SYSTEM
+PHASE 1: ENVIRONMENT SETUP
+AGILE SCRUM DOCUMENTATION
+Version 1.0
+
+---
+
+1. SPRINT OVERVIEW
+
+---
+
+Sprint Name     : Sprint 1 – Environment Setup
+Duration        : 2–3 Days
+Methodology     : Agile Scrum
+Goal            : Prepare a fully working development environment using
+Django + MariaDB on Kali Minimal (Termux)
+
+---
+
+2. SPRINT OBJECTIVE
+
+---
+
+To successfully set up the backend development environment required to start
+building the Appointment Management System.
+
+By the end of this sprint, the system should:
+
+- Run a Django server successfully
+- Have a structured project folder
+- Include required dependencies
+- Be ready for database configuration (MariaDB)
+
+---
+
+3. SPRINT BACKLOG (TASK BREAKDOWN)
+
+---
+
+Task ID| Task Description| Status
+T1| Update system packages| Pending
+T2| Install Python, pip, venv| Pending
+T3| Install MariaDB dependencies| Pending
+T4| Install Node.js and npm| Pending
+T5| Create project directory| Pending
+T6| Create virtual environment| Pending
+T7| Install Django + DRF| Pending
+T8| Create Django project| Pending
+T9| Run Django development server| Pending
+T10| Create Django app (appointments)| Pending
+T11| Register app in settings| Pending
+
+---
+
+4. SPRINT TASK IMPLEMENTATION (COMMANDS)
+
+---
+
+🔹 Task T1: Update System
+sudo apt update && sudo apt upgrade -y
+
+🔹 Task T2: Install Python Tools
+sudo apt install python3 python3-pip python3-venv -y
+
+🔹 Task T3: Install MariaDB Dependencies
+sudo apt install mariadb-client libmariadb-dev libmariadb-dev-compat -y
+
+🔹 Task T4: Install Build Tools
+sudo apt install build-essential -y
+
+🔹 Task T5: Install Node.js
+sudo apt install nodejs npm -y
+
+🔹 Task T6: Create Project Folder
+mkdir appointment_system
+cd appointment_system
+
+🔹 Task T7: Create Virtual Environment
+python3 -m venv venv
+source venv/bin/activate
+
+🔹 Task T8: Install Backend Dependencies
+pip install django djangorestframework mysqlclient
+
+🔹 Task T9: Create Django Project
+django-admin startproject backend
+cd backend
+
+🔹 Task T10: Run Server
+python manage.py runserver 0.0.0.0:8000
+
+🔹 Task T11: Create App
+python manage.py startapp appointments
+
+🔹 Task T12: Register App
+nano backend/settings.py
+
+Add:
+'rest_framework',
+'appointments',
+
+---
+
+5. DEFINITION OF DONE (DoD)
+
+---
+
+A task/sprint is considered complete when:
+
+✔ Django server runs successfully
+✔ No installation errors
+✔ Virtual environment is active
+✔ App “appointments” is created
+✔ App is registered in settings
+✔ MariaDB dependencies installed
+
+---
+
+6. DELIVERABLES
+
+---
+
+- Functional Django backend project
+- Configured development environment
+- Ready for database integration (MariaDB)
+
+---
+
+7. RISKS & MITIGATION
+
+---
+
+Risk| Mitigation
+mysqlclient install fails| Install libmariadb-dev packages
+Port conflict| Use another port (8001)
+Termux limitations| Use lightweight setup only
+Missing dependencies| Reinstall using apt
+
+---
+
+8. SPRINT REVIEW
+
+---
+
+Expected Output:
+
+- Django default page accessible via browser
+- No runtime errors
+- Clean project structure
+
+---
+
+9. NEXT SPRINT (SPRINT 2 PREVIEW)
+
+---
+
+Sprint Name: Database Design & Models
+
+Focus:
+
+- Configure MariaDB connection
+- Design database schema
+- Create Django models:
+  • User (Custom roles: Admin, Doctor, Receptionist)
+  • Appointment
+  • Doctor Profile
+
+---
+
+10. NOTES
+
+---
+
+- MariaDB will be configured in the next sprint
+- Follow step-by-step execution
+- Do not skip tasks to avoid environment issues
+
+---
+
+END OF SPRINT 1 DOCUMENTATION

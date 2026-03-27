@@ -1,0 +1,227 @@
+APPOINTMENT MANAGEMENT SYSTEM
+SPRINT 2: DATABASE DESIGN & MODEL IMPLEMENTATION
+AGILE SCRUM DOCUMENTATION
+Version 1.0
+
+---
+
+1. SPRINT OVERVIEW
+
+---
+
+Sprint Name     : Sprint 2 – Database Design & Core Models
+Duration        : 3–4 Days
+Methodology     : Agile Scrum
+Database        : MariaDB
+Backend         : Django
+Goal            : Design and implement system database structure with
+authentication-ready models.
+
+---
+
+2. SPRINT OBJECTIVE
+
+---
+
+To design and implement the core database structure for the Appointment
+Management System using Django ORM and MariaDB.
+
+By the end of this sprint, the system should:
+
+- Be successfully connected to MariaDB
+- Have a custom User model with roles
+- Include Doctor and Appointment models
+- Support Django migrations without errors
+- Be ready for authentication and API development
+
+---
+
+3. SPRINT BACKLOG (TASK BREAKDOWN)
+
+---
+
+Task ID| Task Description| Status
+T1| Install and configure MariaDB server| Pending
+T2| Create database (appointment_db)| Pending
+T3| Create database user and permissions| Pending
+T4| Configure Django to connect MariaDB| Pending
+T5| Create custom User model with roles| Pending
+T6| Create Doctor model| Pending
+T7| Create Appointment model| Pending
+T8| Register models in Django admin| Pending
+T9| Run migrations successfully| Pending
+T10| Create superuser and test admin panel| Pending
+
+---
+
+4. IMPLEMENTATION GUIDE (COMMANDS + CONFIGURATION)
+
+---
+
+🔹 TASK T1: Install MariaDB Server
+sudo apt install mariadb-server -y
+sudo service mariadb start
+
+🔹 TASK T2: Secure MariaDB
+sudo mysql_secure_installation
+
+🔹 TASK T3: Create Database & User
+sudo mysql -u root -p
+
+SQL Commands:
+CREATE DATABASE appointment_db;
+
+CREATE USER 'appuser'@'localhost' IDENTIFIED BY 'password123';
+
+GRANT ALL PRIVILEGES ON appointment_db.* TO 'appuser'@'localhost';
+
+FLUSH PRIVILEGES;
+EXIT;
+
+---
+
+🔹 TASK T4: Configure Django Database (settings.py)
+
+DATABASES = {
+'default': {
+'ENGINE': 'django.db.backends.mysql',
+'NAME': 'appointment_db',
+'USER': 'appuser',
+'PASSWORD': 'password123',
+'HOST': 'localhost',
+'PORT': '3306',
+}
+}
+
+---
+
+🔹 TASK T5: Custom User Model (models.py)
+
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+class User(AbstractUser):
+ROLE_CHOICES = (
+('admin', 'Admin'),
+('doctor', 'Doctor'),
+('receptionist', 'Receptionist'),
+)
+role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+
+---
+
+🔹 TASK T6: Doctor Model
+
+class Doctor(models.Model):
+user = models.OneToOneField(User, on_delete=models.CASCADE)
+specialization = models.CharField(max_length=100)
+
+def __str__(self):
+    return self.user.username
+
+---
+
+🔹 TASK T7: Appointment Model
+
+class Appointment(models.Model):
+patient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments')
+doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+appointment_date = models.DateTimeField()
+status = models.CharField(max_length=20, default='scheduled')
+
+def __str__(self):
+    return f"{self.patient} - {self.doctor}"
+
+---
+
+🔹 TASK T8: Register Models in Admin
+
+from django.contrib import admin
+from .models import User, Doctor, Appointment
+
+admin.site.register(User)
+admin.site.register(Doctor)
+admin.site.register(Appointment)
+
+---
+
+🔹 TASK T9: Migrations
+
+python manage.py makemigrations
+python manage.py migrate
+
+---
+
+🔹 TASK T10: Create Superuser
+
+python manage.py createsuperuser
+
+---
+
+5. DEFINITION OF DONE (DoD)
+
+---
+
+Sprint is considered complete when:
+
+✔ MariaDB database is created and connected
+✔ Django successfully migrates models
+✔ Custom User model works correctly
+✔ Doctor and Appointment models exist
+✔ Admin panel allows data creation
+✔ No migration or database errors
+
+---
+
+6. DELIVERABLES
+
+---
+
+- Fully designed database schema (Django ORM)
+- Working MariaDB integration
+- Functional admin panel with models
+- Authentication-ready user structure
+
+---
+
+7. RISKS & MITIGATION
+
+---
+
+Risk| Mitigation
+mysqlclient installation failure| Install libmariadb-dev + build tools
+Migration conflicts| Reset migrations carefully if needed
+AUTH_USER_MODEL misconfiguration| Set before first migration
+DB connection errors| Verify credentials and MariaDB service
+
+---
+
+8. SPRINT REVIEW OUTPUT
+
+---
+
+Expected results after Sprint 2:
+
+- Database fully operational
+- Django models synced with MariaDB
+- Admin panel accessible
+- System ready for authentication system
+
+---
+
+9. NEXT SPRINT PREVIEW (SPRINT 3)
+
+---
+
+Sprint Name: Authentication & Role-Based Access Control
+
+Focus:
+
+- Login / Logout system
+- JWT authentication (optional)
+- Role-based permissions (Admin, Doctor, Receptionist)
+- Secure API structure (Django REST Framework)
+
+---
+
+END OF SPRINT 2 DOCUMENTATION
