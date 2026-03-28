@@ -1,0 +1,25 @@
+from django.shortcuts import render
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from .models import Appointment
+from .serializers import AppointmentSerializer
+from .permissions import IsAdmin, IsDoctor, IsReceptionist
+
+#Admin view
+class AdminOnlyView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        return Response({"message": "Welcome Admin, you have full access"})
+#CRUD Views
+#Create Appointments
+class CreateAppointmentView(generics.CreateAPIView):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
+    permission_classes = [IsAuthenticated, IsReceptionist]
+#View all appointments(admin only)
+class AllAppointmentsView(generics.ListAPIView):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+#

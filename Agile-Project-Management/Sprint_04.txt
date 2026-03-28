@@ -1,0 +1,247 @@
+APPOINTMENT MANAGEMENT SYSTEM
+SPRINT 4: APPOINTMENT CRUD API DEVELOPMENT (EXPLAINED VERSION)
+AGILE SCRUM DOCUMENTATION
+Version 2.0
+
+---
+
+1. SPRINT OBJECTIVE
+
+---
+
+To build a full REST API for managing appointments and understand how each
+component works internally in Django REST Framework (DRF).
+
+This sprint focuses not only on coding, but also understanding:
+
+- Why we use serializers
+- How views process requests
+- How permissions protect data
+- How APIs interact with frontend systems
+
+---
+
+2. SERIALIZER (DATA TRANSFORMATION LAYER)
+
+---
+
+CODE:
+
+from rest_framework import serializers
+from .models import Appointment
+
+class AppointmentSerializer(serializers.ModelSerializer):
+class Meta:
+model = Appointment
+fields = 'all'
+
+EXPLANATION:
+The serializer is responsible for converting complex Django models into JSON
+format and vice versa.
+
+- When sending data (POST/PUT), it validates input.
+- When receiving data (GET), it converts database objects into JSON.
+
+IMPORTANCE:
+Without serializers, APIs cannot communicate with frontend applications like
+React. It acts as a "translator" between database and API responses.
+
+---
+
+3. CREATE APPOINTMENT API
+
+---
+
+CODE:
+
+class CreateAppointmentView(generics.CreateAPIView):
+queryset = Appointment.objects.all()
+serializer_class = AppointmentSerializer
+permission_classes = [IsAuthenticated, IsReceptionist]
+
+EXPLANATION:
+This API handles HTTP POST requests to create new appointments.
+
+- queryset: defines which data table is used
+- serializer_class: handles validation and formatting
+- permission_classes: restricts access to only logged-in receptionists
+
+IMPORTANCE:
+This is the entry point for booking appointments. It ensures only authorized
+users (Receptionist) can create appointments.
+
+---
+
+4. VIEW ALL APPOINTMENTS (ADMIN)
+
+---
+
+CODE:
+
+class AllAppointmentsView(generics.ListAPIView):
+queryset = Appointment.objects.all()
+serializer_class = AppointmentSerializer
+permission_classes = [IsAuthenticated, IsAdmin]
+
+EXPLANATION:
+This API returns all appointments stored in the database.
+
+- ListAPIView automatically handles GET requests
+- Returns serialized appointment data
+- Restricted to Admin users only
+
+IMPORTANCE:
+Admins need full visibility of system data for management and decision-making.
+
+---
+
+5. DOCTOR APPOINTMENT VIEW (FILTERED DATA)
+
+---
+
+CODE:
+
+class DoctorAppointmentsView(generics.ListAPIView):
+serializer_class = AppointmentSerializer
+permission_classes = [IsAuthenticated, IsDoctor]
+
+def get_queryset(self):
+    return Appointment.objects.filter(doctor__user=self.request.user)
+
+---
+
+EXPLANATION:
+This view filters appointments so that a doctor only sees their own data.
+
+- request.user = currently logged-in user
+- doctor__user links Appointment → Doctor → User
+- filter() ensures data isolation per doctor
+
+IMPORTANCE:
+This is CRITICAL for data privacy in real systems. Doctors must NOT see
+other doctors' patients.
+
+---
+
+6. UPDATE APPOINTMENT API
+
+---
+
+CODE:
+
+class UpdateAppointmentView(generics.UpdateAPIView):
+queryset = Appointment.objects.all()
+serializer_class = AppointmentSerializer
+permission_classes = [IsAuthenticated, IsAdmin]
+
+EXPLANATION:
+This API allows updating existing appointments using PUT or PATCH requests.
+
+- UpdateAPIView handles modification logic automatically
+- Uses primary key (ID) to locate records
+
+IMPORTANCE:
+Used when appointment time, doctor, or status changes.
+
+---
+
+7. DELETE APPOINTMENT API
+
+---
+
+CODE:
+
+class DeleteAppointmentView(generics.DestroyAPIView):
+queryset = Appointment.objects.all()
+serializer_class = AppointmentSerializer
+permission_classes = [IsAuthenticated, IsAdmin]
+
+EXPLANATION:
+This API deletes an appointment permanently from the database.
+
+- DestroyAPIView handles DELETE requests
+- Requires object ID
+- Only Admin can perform deletion
+
+IMPORTANCE:
+Ensures system cleanup and cancellation of invalid bookings.
+
+---
+
+8. URL ROUTING (API ENDPOINTS)
+
+---
+
+CODE:
+
+from django.urls import path
+from .views import (
+CreateAppointmentView,
+AllAppointmentsView,
+DoctorAppointmentsView,
+UpdateAppointmentView,
+DeleteAppointmentView
+)
+
+urlpatterns = [
+path('create/', CreateAppointmentView.as_view()),
+path('all/', AllAppointmentsView.as_view()),
+path('doctor/', DoctorAppointmentsView.as_view()),
+path('update/"int:pk" (int:pk)/', UpdateAppointmentView.as_view()),
+path('delete/"int:pk" (int:pk)/', DeleteAppointmentView.as_view()),
+]
+
+EXPLANATION:
+URLs define how frontend or API clients access backend functions.
+
+- Each path maps a URL to a Python class (view)
+- .as_view() converts class into callable API endpoint
+- "int:pk" (int:pk) allows dynamic access using appointment ID
+
+IMPORTANCE:
+Without URLs, APIs cannot be accessed externally.
+
+---
+
+9. API AUTHENTICATION FLOW
+
+---
+
+1. User logs in via JWT
+2. System returns access token
+3. Token is sent in request headers:
+   Authorization: Bearer <token>
+4. Backend verifies token before processing request
+
+IMPORTANCE:
+This prevents unauthorized users from accessing sensitive data.
+
+---
+
+10. DEFINITION OF DONE
+
+---
+
+✔ API endpoints work correctly
+✔ Data is properly created, read, updated, deleted
+✔ Role-based access is enforced
+✔ Doctors only see their own data
+✔ No unauthorized access is possible
+
+---
+
+11. KEY LEARNING OUTCOMES
+
+---
+
+After this sprint, you understand:
+
+- How Django REST API works internally
+- How serializers convert data
+- How views handle HTTP requests
+- How permissions secure systems
+- How real-world appointment systems operate
+
+---
+
+END OF SPRINT 4 (EXPLAINED VERSION)

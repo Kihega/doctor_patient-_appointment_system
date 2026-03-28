@@ -1,13 +1,39 @@
-from django.shortcuts import render
-
-# Create your views here.
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsAdmin
+from .models import Appointment
+from .serializers import AppointmentSerializer
+from .permissions import IsAdmin, IsDoctor, IsReceptionist
 
-class AdminOnlyView(APIView):
+#Appointment Creation
+class CreateAppointmentView(generics.CreateAPIView):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
+    permission_classes = [IsAuthenticated, IsReceptionist]
+
+#Admin appointment view
+class AllAppointmentsView(generics.ListAPIView):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
 
-    def get(self, request):
-        return Response({"message": "Welcome Admin, you have full access"})
+#Doczor Appointment view
+class DoctorAppointmentsView(generics.ListAPIView):
+    serializer_class = AppointmentSerializer
+    permission_classes = [IsAuthenticated, IsDoctor]
+
+    def get_queryset(self):
+        return Appointment.objects.filter(doctor__user=self.request.user)
+
+#Appointment Updation
+class UpdateAppointmentView(generics.UpdateAPIView):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+#Appointment deletion or Cancelation
+class DeleteAppointmentView(generics.DestroyAPIView):
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+#THIS IS THE CRUD FILE

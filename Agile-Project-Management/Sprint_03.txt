@@ -1,0 +1,235 @@
+APPOINTMENT MANAGEMENT SYSTEM
+SPRINT 3: AUTHENTICATION & ROLE-BASED ACCESS CONTROL (RBAC)
+AGILE SCRUM DOCUMENTATION
+Version 1.0
+
+---
+
+1. SPRINT OVERVIEW
+
+---
+
+Sprint Name     : Sprint 3 – Authentication & RBAC
+Duration        : 3–5 Days
+Methodology     : Agile Scrum
+Backend         : Django + Django REST Framework
+Auth System     : JWT (JSON Web Token)
+Goal            : Secure the system with authentication and role-based access control
+
+---
+
+2. SPRINT OBJECTIVE
+
+---
+
+To implement a secure authentication system using JWT and enforce role-based
+access control for different system users (Admin, Doctor, Receptionist).
+
+By the end of this sprint, the system should:
+
+- Allow user login and token generation (JWT)
+- Protect API endpoints using authentication
+- Restrict access based on user roles
+- Enable secure communication between client and backend
+
+---
+
+3. USER ROLES
+
+---
+
+🔹 Admin:
+
+- Full system access
+- Manage users, appointments, and system data
+
+🔹 Doctor:
+
+- View assigned appointments
+- Access patient information
+- Limited modification rights
+
+🔹 Receptionist:
+
+- Create and manage appointments
+- Limited administrative access
+
+---
+
+4. SPRINT BACKLOG (TASK BREAKDOWN)
+
+---
+
+Task ID| Task Description| Status
+T1| Install JWT authentication package| Done
+T2| Configure Django REST Framework| Done
+T3| Set up JWT authentication endpoints| Done
+T4| Create login & token generation system| Pending
+T5| Implement role-based permissions (RBAC)| Pending
+T6| Create protected API views| Pending
+T7| Connect permissions to User roles| Pending
+T8| Test authentication flow| Pending
+
+---
+
+5. IMPLEMENTATION DETAILS
+
+---
+
+🔹 STEP 1: INSTALL JWT SUPPORT
+
+pip install djangorestframework-simplejwt
+
+---
+
+🔹 STEP 2: CONFIGURE REST FRAMEWORK (settings.py)
+
+REST_FRAMEWORK = {
+'DEFAULT_AUTHENTICATION_CLASSES': (
+'rest_framework_simplejwt.authentication.JWTAuthentication',
+),
+}
+
+---
+
+🔹 STEP 3: ADD JWT URLS (backend/urls.py)
+
+from rest_framework_simplejwt.views import (
+TokenObtainPairView,
+TokenRefreshView,
+)
+
+urlpatterns = [
+path('admin/', admin.site.urls),
+
+path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+]
+
+---
+
+🔹 STEP 4: ROLE-BASED PERMISSIONS (appointments/permissions.py)
+
+from rest_framework.permissions import BasePermission
+
+class IsAdmin(BasePermission):
+def has_permission(self, request, view):
+return request.user.role == 'admin'
+
+class IsDoctor(BasePermission):
+def has_permission(self, request, view):
+return request.user.role == 'doctor'
+
+class IsReceptionist(BasePermission):
+def has_permission(self, request, view):
+return request.user.role == 'receptionist'
+
+---
+
+6. AUTHENTICATION FLOW
+
+---
+
+1. User sends login request:
+   POST /api/token/
+
+2. System validates credentials
+
+3. System returns:
+   
+   - Access Token
+   - Refresh Token
+
+4. Client stores token
+
+5. Client sends token in requests:
+   Authorization: Bearer <access_token>
+
+6. Backend validates token before granting access
+
+---
+
+7. PROTECTED API FLOW
+
+---
+
+Example:
+GET /api/admin-area/
+
+Rules:
+
+- User must be authenticated
+- User must have role = admin
+- Otherwise access is denied (403 Forbidden)
+
+---
+
+8. DEFINITION OF DONE (DoD)
+
+---
+
+Sprint is considered complete when:
+
+✔ JWT login system works correctly
+✔ Access and refresh tokens are generated
+✔ Protected APIs reject unauthorized users
+✔ Role-based permissions are enforced
+✔ Admin, Doctor, Receptionist access rules work correctly
+✔ No authentication bypass is possible
+
+---
+
+9. SECURITY FEATURES IMPLEMENTED
+
+---
+
+- JWT Authentication (token-based security)
+- Role-Based Access Control (RBAC)
+- Protected API endpoints
+- Secure user session handling
+- Backend authorization enforcement
+
+---
+
+10. SPRINT DELIVERABLES
+
+---
+
+- Functional authentication system
+- JWT login and token refresh system
+- Role-based permission structure
+- Secure API endpoints
+- Django REST Framework authentication setup
+
+---
+
+11. RISKS & MITIGATION
+
+---
+
+Risk| Mitigation Strategy
+Token not working| Check Bearer token format
+Role attribute missing| Ensure custom User model is used
+Unauthorized access issues| Validate permissions properly
+Misconfigured REST settings| Verify REST_FRAMEWORK config
+
+---
+
+12. NEXT SPRINT PREVIEW (SPRINT 4)
+
+---
+
+Sprint Name: Appointment CRUD API Development
+
+Focus:
+
+- Create appointment API
+- Read appointment API
+- Update appointment API
+- Delete appointment API
+- Role-based filtering (Doctor sees only assigned data)
+
+---
+
+END OF SPRINT 3 DOCUMENTATION

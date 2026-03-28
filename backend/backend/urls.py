@@ -31,4 +31,5 @@ urlpatterns = [
 
     # App URLs
     path('api/', include('appointments.urls')),
+    
 ]
